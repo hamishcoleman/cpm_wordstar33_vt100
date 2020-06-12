@@ -29,12 +29,7 @@ patch:
     cp CH_ESC
     jr z, handle_esc
     cp CH_BS
-    jr z, 2f
-    cp CH_DEL
     ret nz      ; not for us, hand it back
-    ld A, CH_BS ; switch DEL with BS
-    ret
-2:
     ld A, CH_DEL ; switch BS with DEL
     ret
 
