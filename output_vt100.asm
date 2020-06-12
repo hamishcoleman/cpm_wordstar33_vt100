@@ -1,5 +1,6 @@
 
 IDTEX   EQU 0x18a
+AUPAV   EQU 0x228
 CLEAD1  EQU 0x234
 CLEAD2  EQU 0x23d
 CTRAIL  EQU 0x242
@@ -10,6 +11,11 @@ UCRPOS  EQU 0x24b
 
     org IDTEX
     db "      VT-100/xterm           "
+
+ORG AUPAV
+    db 0
+    ; originally 0xff, failing to clear this causes WordStar to think it needs
+    ; configuring
 
 ORG CLEAD1
     db 2
@@ -28,7 +34,7 @@ org LINOFF
 org COLOFF
     db 1
 org ASCUR
-    db 2
+    db 2    ; use numeric cursor positioning
 
 org UCRPOS
     nop
@@ -41,9 +47,13 @@ EAREOL:
     db 0x1b, "[K"
     db 0,0,0
 LINDEL:
-    db 0,0,0,0,0,0,0
+    db 3
+    db 0x1b, "[M"
+    db 0,0,0
 LININS:
-    db 0,0,0,0,0,0,0
+    db 3
+    db 0x1b, "[L"
+    db 0,0,0
 
     db 0,0
 
