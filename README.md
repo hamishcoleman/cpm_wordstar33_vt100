@@ -9,7 +9,7 @@ ones is pretty simple, so could it fit within the available patch space?
 
 # Useful references
 
-- [z80 instruction set](ttp://z80-heaven.wikidot.com/instructions-set)
+- [z80 instruction set](http://z80-heaven.wikidot.com/instructions-set)
 - [CPM zero page](https://en.wikipedia.org/wiki/Zero_page_(CP/M))
 - [CPM BIOS calls](https://www.seasip.info/Cpm/bios.html)
 
