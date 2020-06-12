@@ -20,27 +20,28 @@ build-deps:
 %.bin: %.o
 	z80-unknown-coff-objcopy $< -O binary $@
 
-patch_uconi.bin: keyxlat.bin
+uconi.raw: keyxlat.bin
 	dd if=$< of=$@ bs=1 skip=$$(($(UCONI))) count=3
 
-patch_main.bin: keyxlat.bin
+keyxlat.raw: keyxlat.bin
 	dd if=$< of=$@ bs=1 skip=$$(($(MORPAT)))
 
-patch_configured.bin: output_vt100.bin
+configured.raw: output_vt100.bin
 	dd if=$< of=$@ bs=1 skip=$$(($(AUPAV))) count=1
 
-patch_output.bin: output_vt100.bin
+output_vt100.raw: output_vt100.bin
 	dd if=$< of=$@ bs=1 skip=$$(($(CLEAD1)))
 
-ws.com: patch_uconi.bin patch_main.bin patch_output.bin patch_configured.bin wsu.com
-	cp wsu.com ws.com
-	dd if=patch_uconi.bin of=ws.com conv=notrunc bs=1 seek=$$(($(UCONI)-0x100))
-	dd if=patch_main.bin of=ws.com conv=notrunc bs=1 seek=$$(($(MORPAT)-0x100))
-	dd if=patch_output.bin of=ws.com conv=notrunc bs=1 seek=$$(($(CLEAD1)-0x100))
-	dd if=patch_configured.bin of=ws.com conv=notrunc bs=1 seek=$$(($(AUPAV)-0x100))
+ws.com: uconi.raw keyxlat.raw output_vt100.raw configured.raw wsu.com
+	cp wsu.com $@
+	dd if=uconi.raw of=$@ conv=notrunc bs=1 seek=$$(($(UCONI)-0x100))
+	dd if=keyxlat.raw of=$@ conv=notrunc bs=1 seek=$$(($(MORPAT)-0x100))
+	dd if=output_vt100.raw of=$@ conv=notrunc bs=1 seek=$$(($(CLEAD1)-0x100))
+	dd if=configured.raw of=$@ conv=notrunc bs=1 seek=$$(($(AUPAV)-0x100))
 
 # TODO:
 # - if patch_main.bin size is > 128 error
+# - if output_vt100.raw size means it overlaps with uconi.raw, error
 
 clean:
-	rm -f $(TARGETS) patch_uconi.bin patch_main.bin
+	rm -f $(TARGETS) *.bin *.raw ws.com
