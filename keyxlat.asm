@@ -14,8 +14,6 @@ CH_DEL  EQU 0x7f
 
 ; our patch function
     ORG MORPAT
-nextch:
-    db  0
 patch:
     ; do we have a saved char?
     ld hl, nextch
@@ -86,4 +84,7 @@ WS_END  EQU 'd'
     ; home and end are ^[[H and ^[[F
 to1:
     ;   A      B      C      D           F            H
-    db  WS_UP, WS_DN, WS_RT, WS_LT, 'E', WS_END, 'G', WS_HOME
+    db  WS_UP, WS_DN, WS_RT, WS_LT
+nextch:
+    db  0   ; Stash a variable in an unused spot in the xlat table
+    db WS_END, 'G', WS_HOME
