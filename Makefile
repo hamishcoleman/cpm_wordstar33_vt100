@@ -25,3 +25,6 @@ ws.com: patch_uconi.bin patch_main.bin wsu.com
 	cp wsu.com ws.com
 	dd if=patch_uconi.bin of=ws.com conv=notrunc bs=1 seek=$$((0x19d))
 	dd if=patch_main.bin of=ws.com conv=notrunc bs=1 seek=$$((0x1cb))
+
+# TODO:
+# - if patch_main.bin size is > 128 error

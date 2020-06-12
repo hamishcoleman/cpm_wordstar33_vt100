@@ -108,6 +108,8 @@ WS_PGD  EQU 'C'-'@'
 
 WS_NXWD EQU 'F'-'@'
 WS_PVWD EQU 'A'-'@'
+WS_UPLN EQU 'W'-'@'
+WS_DNLN EQU 'Z'-'@'
 
     ; the simple cursor diamond is ^[[A through ^[[D
     ; home and end are ^[[H and ^[[F
@@ -125,6 +127,6 @@ table2:
 
 table3:
     ; the first two chars are ctrl+up and ctrl+down, if there is a reasonable
-    ; mapping
-    ;       right ^[[1;5C, left ^[[1;5D
-    db 0, 0, WS_NXWD, WS_PVWD
+    ; ctrl + Up, Down, Right, Left (codes are like ^[[1;5A)
+    ;  A        B        C        D
+    db WS_UPLN, WS_DNLN, WS_NXWD, WS_PVWD
