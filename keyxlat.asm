@@ -27,7 +27,7 @@ patch:
 1:
     call WSCONI
     cp CH_ESC
-    jr z, 1f
+    jr z, handle_esc
     cp CH_BS
     jr z, 2f
     cp CH_DEL
@@ -38,22 +38,23 @@ patch:
     ld A, CH_DEL ; switch BS with DEL
     ret
 
-1:
+handle_esc:
     call WSCONI
     cp '['
-    ret nz      ; not a CSI, eat the escape and hand the rest back
+    ret nz
+    ; TODO: can we save A in nextch and return Esc?
 
     call WSCONI
 
     ; is this a table1 xlat?
     cp 'A'
-    jr c, 2f
+    jr c, below_A
     cp 'I'
     ret nc
 
-    ; table1
     sub 'A'
     ld ix, table1
+    ; fall through
 
 xlat:
     ld b,0
@@ -70,11 +71,10 @@ xlat:
     ld a, CTRL_Q
     ret
 
-2:
+below_A:
     cp '2'
-    jr c, 1f
-    cp '7'
-    jr nc, 1f
+    jr c, below_2
+    ; we know it is between '2' and '?', dont do errorchecks for >'6'
 
     ; it is a number
     push af
@@ -84,8 +84,17 @@ xlat:
     ld ix, table2
     jr xlat
 
-1:
-    ret
+below_2:
+    ; is it a ctrl+ left or right
+    cp '1'
+    ret nz
+    ; No checks done on the swallowed chars!
+    call WSCONI ; swallow the semicolon
+    call WSCONI ; swallow the '5'
+    call WSCONI
+    sub 'A'
+    ld ix, table3
+    jr xlat
 
 CTRL_Q  EQU 'Q'-'@'
 
@@ -102,6 +111,9 @@ WS_DEL  EQU 'G'-'@'
 WS_PGU  EQU 'R'-'@'
 WS_PGD  EQU 'C'-'@'
 
+WS_NXWD EQU 'F'-'@'
+WS_PVWD EQU 'A'-'@'
+
     ; the simple cursor diamond is ^[[A through ^[[D
     ; home and end are ^[[H and ^[[F
 table1:
@@ -115,3 +127,9 @@ table2:
     ; ends with a tilde, FFS: ^[[2~
     ;   2       3       4      5       6
     db  WS_INS, WS_DEL, '4',   WS_PGU, WS_PGD
+
+table3:
+    ; the first two chars are ctrl+up and ctrl+down, if there is a reasonable
+    ; mapping
+    ;       right ^[[1;5C, left ^[[1;5D
+    db 0, 0, WS_NXWD, WS_PVWD
