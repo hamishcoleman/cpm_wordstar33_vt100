@@ -12,3 +12,23 @@ ones is pretty simple, so could it fit within the available patch space?
 - [z80 instruction set](ttp://z80-heaven.wikidot.com/instructions-set)
 - [CPM zero page](https://en.wikipedia.org/wiki/Zero_page_(CP/M))
 - [CPM BIOS calls](https://www.seasip.info/Cpm/bios.html)
+
+# Keyboard translations
+
+The patch will translate the following xterm key presses into useful wordstar
+commands:
+
+- Up
+- Down
+- Left
+- Right
+- Insert
+- Delete
+- Home
+- End
+- Page Up
+- Page Down
+- Ctrl-Up
+- Ctrl-Down
+- Ctrl-Left
+- Ctrl-Right
