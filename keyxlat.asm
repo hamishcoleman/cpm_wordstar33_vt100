@@ -2,6 +2,7 @@
 
 UCONI   EQU 0x029d
 MORPAT  EQU 0x02cb
+WSCONST EQU 0x1d55
 WSCONI  EQU 0x1d6c  ; original CONIN function
 
 CH_BS   EQU 0x08
@@ -67,6 +68,10 @@ xlat:
     ld (hl), a
     ld a, CTRL_Q
     ret
+    ; FIXME:
+    ; - wordstar calls the WSCONST() to check if there is a char waiting,
+    ;   which means our ^Q command gets paused for a timeout.  It stll works
+    ;   but it is not ideal.
 
 below_A:
     cp '2'
