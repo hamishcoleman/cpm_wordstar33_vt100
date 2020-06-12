@@ -28,3 +28,6 @@ ws.com: patch_uconi.bin patch_main.bin wsu.com
 
 # TODO:
 # - if patch_main.bin size is > 128 error
+
+clean:
+	rm -f $(TARGETS) patch_uconi.bin patch_main.bin
