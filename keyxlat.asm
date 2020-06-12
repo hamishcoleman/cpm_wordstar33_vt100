@@ -45,32 +45,49 @@ patch:
 
     call WSCONI
 
-    ; is this a simple cursor move?
+    ; is this a table1 xlat?
     cp 'A'
-    ret c
+    jr c, 2f
     cp 'I'
     ret nc
 
+    ; table1
+    sub 'A'
+    ld ix, table1
+
+xlat:
     ld b,0
     ld c,a
-    ld ix, to1-'A'
     add ix,bc
-    cp 'E'
-    jr c, 1f
-
-CTRL_Q  EQU 'Q'-'@'
-
+    cp 5        ; table size
+    jr nc, 1f
+    ld a, (ix)  ; simple one char xlat
+    ret
+1:
     ; needs a ^Q prefix
     ld a, (ix)
     ld (hl), a
     ld a, CTRL_Q
     ret
 
-    ; simple one char xlat
+2:
+    cp '2'
+    jr c, 1f
+    cp '7'
+    jr nc, 1f
+
+    ; it is a number
+    push af
+    call WSCONI ; swallow the tilde
+    pop af
+    sub '2'
+    ld ix, table2
+    jr xlat
+
 1:
-    ld a, (ix)
     ret
 
+CTRL_Q  EQU 'Q'-'@'
 
 WS_UP   EQU 'E'-'@'
 WS_DN   EQU 'X'-'@'
@@ -80,11 +97,21 @@ WS_RT   EQU 'D'-'@'
 WS_HOME EQU 's'
 WS_END  EQU 'd'
 
+WS_INS  EQU 'V'-'@'
+WS_DEL  EQU 'G'-'@'
+WS_PGU  EQU 'R'-'@'
+WS_PGD  EQU 'C'-'@'
+
     ; the simple cursor diamond is ^[[A through ^[[D
     ; home and end are ^[[H and ^[[F
-to1:
-    ;   A      B      C      D           F            H
+table1:
+    ;   A      B      C      D
     db  WS_UP, WS_DN, WS_RT, WS_LT
 nextch:
     db  0   ; Stash a variable in an unused spot in the xlat table
     db WS_END, 'G', WS_HOME
+
+table2:
+    ; ends with a tilde, FFS: ^[[2~
+    ;   2       3       4      5       6
+    db  WS_INS, WS_DEL, '4',   WS_PGU, WS_PGD
