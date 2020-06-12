@@ -1,0 +1,8 @@
+
+# generated output
+*.bin
+*.hex
+*.o
+
+# vim temp files
+.*.swp
