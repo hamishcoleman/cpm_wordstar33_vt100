@@ -34,7 +34,7 @@ patch:
     ld A, CH_DEL ; switch BS with DEL
     ret
 
-    ; TODO: can we reliably confirm that there is not another char avaialable
+    ; TODO: can we reliably confirm that there is not another char available
     ; and return a single ESC if not?
 handle_esc:
     call WSCONI
