@@ -60,12 +60,24 @@ handle_esc:
 
     call WSCONI
 
-    ; is this a table1 xlat?
+    ; Which table to use?
+    cp '2'
+    jr c, below_2
     cp 'A'
     jr c, below_A
-    cp 'I'
-    ret nc
+    cp 'E'
+    jr c, below_E
 
+    ; above E
+    ; needs a ^Q prefix
+    sub 'F'
+    ld ix, table4
+    call xlat
+    ld (hl), a
+    ld a, CTRL_Q
+    ret
+
+below_E:
     sub 'A'
     ld ix, table1
     ; fall through
@@ -76,23 +88,10 @@ xlat:
     ld b,0
     ld c,a
     add ix,bc
-    cp 5        ; table size
-    jr nc, 1f
     ld a, (ix)  ; simple one char xlat
-    ret
-1:
-    ; needs a ^Q prefix
-    ld a, (ix)
-    ld (hl), a
-    ld a, CTRL_Q
     ret
 
 below_A:
-    cp '2'
-    jr c, below_2
-    ; we know it is between '2' and '?', dont do errorchecks for >'6'
-
-    ; it is a number
     ; TODO: F9 - F12 end up here too
     push af
     call WSCONI ; swallow the tilde
@@ -102,11 +101,7 @@ below_A:
     jr xlat
 
 below_2:
-    ; is it a ctrl+ left or right
-    cp '1'
-    ret nz
     ; TODO: F5 - F8 end up here too
-    ; No checks done on the swallowed chars!
     call WSCONI ; swallow the semicolon
     call WSCONI ; swallow the '5'
     call WSCONI
@@ -139,9 +134,6 @@ WS_DNLN EQU 'Z'-'@'
 table1:
     ;   A      B      C      D
     db  WS_UP, WS_DN, WS_RT, WS_LT
-nextch:
-    db  0   ; Stash a variable in an unused spot in the xlat table
-    db WS_END, 'G', WS_HOME
 
 table2:
     ; ends with a tilde, FFS: ^[[2~
@@ -149,7 +141,12 @@ table2:
     db  WS_INS, WS_DEL, '4',   WS_PGU, WS_PGD
 
 table3:
-    ; the first two chars are ctrl+up and ctrl+down, if there is a reasonable
     ; ctrl + Up, Down, Right, Left (codes are like ^[[1;5A)
     ;  A        B        C        D
     db WS_UPLN, WS_DNLN, WS_NXWD, WS_PVWD
+
+table4:
+    db WS_END   ; F
+nextch:
+    db  0   ; Stash a variable in an unused spot in the xlat table
+    db WS_HOME  ; H
