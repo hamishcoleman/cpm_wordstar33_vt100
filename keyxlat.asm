@@ -19,7 +19,7 @@ patch:
     ; do we have a saved char?
     ld hl, nextch
     ld A, (hl)
-    cp 0
+    or A
     jr z, 1f
     ld B, 0
     ld (hl), B
