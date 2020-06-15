@@ -1,5 +1,6 @@
 .align 0
 
+UCNSTA  EQU 0x029a
 UCONI   EQU 0x029d
 MORPAT  EQU 0x02cb
 WSCONST EQU 0x1d55
@@ -9,12 +10,27 @@ CH_BS   EQU 0x08
 CH_ESC  EQU 0x1b
 CH_DEL  EQU 0x7f
 
+; FIXME:
+; - hook UCNSTA with a check for our nextchar
+
 ; jump to our patches
+;     ORG UCNSTA
+;     jp patch_CONST
+
     ORG UCONI
     jp patch_CONI
 
 ; our patch function
     ORG MORPAT
+; patch_CONST:
+;     ; do we have a saved char?
+;     ld hl, nextch
+;     ld A, (hl)
+;     or A
+;     jp z, WSCONST
+;     ld A, 255
+;     ret
+
 patch_CONI:
     ; do we have a saved char?
     ld hl, nextch
@@ -68,10 +84,6 @@ xlat:
     ld (hl), a
     ld a, CTRL_Q
     ret
-    ; FIXME:
-    ; - wordstar calls the WSCONST() to check if there is a char waiting,
-    ;   which means our ^Q command gets paused for a timeout.  It stll works
-    ;   but it is not ideal.
 
 below_A:
     cp '2'
