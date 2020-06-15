@@ -9,13 +9,13 @@ CH_BS   EQU 0x08
 CH_ESC  EQU 0x1b
 CH_DEL  EQU 0x7f
 
-; patch the routine
+; jump to our patches
     ORG UCONI
-    jp patch
+    jp patch_CONI
 
 ; our patch function
     ORG MORPAT
-patch:
+patch_CONI:
     ; do we have a saved char?
     ld hl, nextch
     ld A, (hl)
@@ -40,7 +40,7 @@ handle_esc:
     call WSCONI
     cp '['
     ret nz
-    ; TODO: can we save A in nextch and return Esc?
+    ; TODO: saving A in nexch and returning ESC costs 5 bytes
 
     call WSCONI
 
