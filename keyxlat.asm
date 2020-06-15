@@ -93,6 +93,7 @@ below_A:
     ; we know it is between '2' and '?', dont do errorchecks for >'6'
 
     ; it is a number
+    ; TODO: F9 - F12 end up here too
     push af
     call WSCONI ; swallow the tilde
     pop af
@@ -104,6 +105,7 @@ below_2:
     ; is it a ctrl+ left or right
     cp '1'
     ret nz
+    ; TODO: F5 - F8 end up here too
     ; No checks done on the swallowed chars!
     call WSCONI ; swallow the semicolon
     call WSCONI ; swallow the '5'
