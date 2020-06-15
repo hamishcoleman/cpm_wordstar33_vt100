@@ -71,6 +71,8 @@ handle_esc:
     ; fall through
 
 xlat:
+    ; a is offset
+    ; ix is address of xlat table
     ld b,0
     ld c,a
     add ix,bc
